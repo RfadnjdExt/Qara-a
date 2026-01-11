@@ -22,7 +22,7 @@ import { toast } from "sonner"
 // tipe data
 type Class = { id: string; name: string }
 type Student = { id: string; full_name: string }
-type Session = { id: string; session_date: string }
+type Session = { id: string; session_date: string; notes?: string }
 type Template = { id: string; name: string }
 
 type EvalFormData = {
@@ -49,6 +49,7 @@ export function StudentEvaluation({
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [evaluatedStudentIds, setEvaluatedStudentIds] = useState<string[]>([])
+  const [fullSessionIds, setFullSessionIds] = useState<string[]>([])
 
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null)
   const [selectedSession, setSelectedSession] = useState<string | null>(null)
@@ -84,7 +85,15 @@ export function StudentEvaluation({
       .eq("evaluator_id", guruId)
 
     if (data) {
-      setEvaluatedStudentIds(data.map((e: any) => e.user_id))
+      const ids = data.map((e: any) => e.user_id)
+      setEvaluatedStudentIds(ids)
+
+      // Check if session is now full
+      if (students.length > 0 && ids.length >= students.length) {
+        if (!fullSessionIds.includes(sessionId)) {
+          setFullSessionIds(prev => [...prev, sessionId])
+        }
+      }
     }
   }
 
@@ -134,8 +143,29 @@ export function StudentEvaluation({
       if (studentsRes.error) throw studentsRes.error
       if (sessionsRes.error) throw sessionsRes.error
 
-      setStudents(studentsRes.data?.map((e: any) => e.user) || [])
-      setSessions(sessionsRes.data || [])
+      const loadedStudents = studentsRes.data?.map((e: any) => e.user) || []
+      const loadedSessions = sessionsRes.data || []
+
+      setStudents(loadedStudents)
+      setSessions(loadedSessions)
+
+      // Calculate Full Sessions
+      if (loadedStudents.length > 0 && loadedSessions.length > 0) {
+        const { data: evals } = await supabase
+          .from("evaluations")
+          .select("session_id")
+          .in("session_id", loadedSessions.map((s: any) => s.id))
+          .eq("evaluator_id", guruId)
+
+        if (evals) {
+          const counts: Record<string, number> = {}
+          evals.forEach((e: any) => counts[e.session_id] = (counts[e.session_id] || 0) + 1)
+
+          const full = Object.keys(counts).filter(sid => counts[sid] >= loadedStudents.length)
+          setFullSessionIds(full)
+        }
+      }
+
     } catch (err) {
       console.error("Error fetching class data:", err)
       toast.error("Gagal memuat data kelas")
@@ -281,11 +311,17 @@ export function StudentEvaluation({
                                 required
                               >
                                 <option value="">-- Pilih Sesi --</option>
-                                {sessions.map((s) => (
-                                  <option key={s.id} value={s.id}>
-                                    {new Date(s.session_date).toLocaleDateString("id-ID")}
-                                  </option>
-                                ))}
+                                {sessions.map((s) => {
+                                  const isFull = fullSessionIds.includes(s.id)
+                                  const label = new Date(s.session_date).toLocaleDateString("id-ID")
+                                  const note = s.notes ? ` (${s.notes})` : ""
+
+                                  return (
+                                    <option key={s.id} value={s.id} disabled={isFull}>
+                                      {label}{note} {isFull ? "- Penuh" : ""}
+                                    </option>
+                                  )
+                                })}
                               </select>
                             </div>
                             <div className="space-y-2">
