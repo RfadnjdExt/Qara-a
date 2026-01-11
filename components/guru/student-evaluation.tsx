@@ -48,6 +48,7 @@ export function StudentEvaluation({
 
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [evaluatedStudentIds, setEvaluatedStudentIds] = useState<string[]>([])
 
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null)
   const [selectedSession, setSelectedSession] = useState<string | null>(null)
@@ -66,6 +67,25 @@ export function StudentEvaluation({
   useEffect(() => {
     fetchInitialData()
   }, [guruId, institutionId])
+
+  useEffect(() => {
+    if (selectedSession) {
+      fetchEvaluatedStudents(selectedSession)
+    } else {
+      setEvaluatedStudentIds([])
+    }
+  }, [selectedSession])
+
+  async function fetchEvaluatedStudents(sessionId: string) {
+    const { data } = await supabase
+      .from("evaluations")
+      .select("user_id")
+      .eq("session_id", sessionId)
+
+    if (data) {
+      setEvaluatedStudentIds(data.map((e: any) => e.user_id))
+    }
+  }
 
   async function fetchInitialData() {
     setIsLoading(true)
@@ -137,7 +157,14 @@ export function StudentEvaluation({
         ...evalFormData,
       })
 
-      if (error) throw error
+      if (error) {
+        if (error.code === "23505") {
+          toast.error("Santri ini sudah dinilai pada sesi ini. Silakan pilih sesi lain atau edit data di menu Detail Sesi.")
+        } else {
+          throw error
+        }
+        return
+      }
 
       toast.success("Evaluasi berhasil disimpan")
 
@@ -245,11 +272,14 @@ export function StudentEvaluation({
                                 required
                               >
                                 <option value="">-- Pilih Santri --</option>
-                                {students.map((s) => (
-                                  <option key={s.id} value={s.id}>
-                                    {s.full_name}
-                                  </option>
-                                ))}
+                                {students.map((s) => {
+                                  const isEvaluated = evaluatedStudentIds.includes(s.id)
+                                  return (
+                                    <option key={s.id} value={s.id} disabled={isEvaluated}>
+                                      {s.full_name} {isEvaluated ? "(Sudah dinilai)" : ""}
+                                    </option>
+                                  )
+                                })}
                               </select>
                             </div>
                           </div>
