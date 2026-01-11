@@ -13,7 +13,7 @@ export function MuridDashboardContent({ userId }: { userId: string }) {
   useEffect(() => {
     async function fetchData() {
       const [enrollmentsRes, evaluationsRes] = await Promise.all([
-        supabase.from("class_enrollments").select("class:classes(name, guru:users(full_name))").eq("user_id", userId),
+        supabase.from("class_enrollments").select("id, class:classes(name, guru:users(full_name))").eq("user_id", userId),
         supabase
           .from("evaluations")
           .select("*, session:sessions(session_date)")
@@ -32,6 +32,24 @@ export function MuridDashboardContent({ userId }: { userId: string }) {
 
   if (isLoading) {
     return <div className="text-center py-10">Memuat...</div>
+  }
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "Tanggal tidak tersedia"
+    try {
+      return new Date(dateString).toLocaleDateString("id-ID", {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    } catch (e) {
+      return "Format tanggal salah"
+    }
+  }
+
+  const formatLevel = (level: string) => {
+    return level ? level.replace(/_/g, " ") : "—"
   }
 
   return (
@@ -72,10 +90,19 @@ export function MuridDashboardContent({ userId }: { userId: string }) {
               recentEvaluations.map((evaluation: any) => (
                 <div key={evaluation.id} className="flex justify-between items-start p-3 bg-muted rounded">
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(evaluation.session?.session_date).toLocaleDateString()}
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {formatDate(evaluation.session?.session_date)}
                     </p>
-                    <p className="text-sm font-medium capitalize">{evaluation.hafalan_level || "—"}</p>
+                    <div className="flex gap-2">
+                      <span className="text-sm font-medium capitalize bg-blue-100/50 px-2 py-0.5 rounded text-blue-700">
+                        Hafalan: {formatLevel(evaluation.hafalan_level)}
+                      </span>
+                    </div>
+                    {evaluation.additional_notes && (
+                      <p className="text-xs text-muted-foreground mt-1 italic">
+                        "{evaluation.additional_notes}"
+                      </p>
+                    )}
                   </div>
                 </div>
               ))
