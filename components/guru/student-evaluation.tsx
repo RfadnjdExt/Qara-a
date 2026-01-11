@@ -81,6 +81,7 @@ export function StudentEvaluation({
       .from("evaluations")
       .select("user_id")
       .eq("session_id", sessionId)
+      .eq("evaluator_id", guruId)
 
     if (data) {
       setEvaluatedStudentIds(data.map((e: any) => e.user_id))
@@ -150,6 +151,24 @@ export function StudentEvaluation({
     }
 
     try {
+      // 1. Pre-check: Cek apakah santri ini sudah dinilai di sesi ini
+      const { data: existing } = await supabase
+        .from("evaluations")
+        .select("id")
+        .eq("session_id", selectedSession)
+        .eq("user_id", selectedStudent)
+        .eq("evaluator_id", guruId)
+        .maybeSingle()
+
+      if (existing) {
+        toast.error("Santri ini sudah dinilai pada sesi ini. Data tidak disimpan.")
+
+        // Refresh styling di dropdown
+        if (selectedSession) fetchEvaluatedStudents(selectedSession)
+
+        return // Stop process
+      }
+
       const { error } = await supabase.from("evaluations").insert({
         session_id: selectedSession,
         user_id: selectedStudent,
@@ -158,10 +177,8 @@ export function StudentEvaluation({
       })
 
       if (error) {
-        // Check for Postgres error code 23505 OR duplicate key message
         if (error.code === "23505" || error.message.includes("duplicate key")) {
           toast.error("Santri ini sudah dinilai pada sesi ini. Data tidak disimpan.")
-          // Refresh list just in case
           if (selectedSession) fetchEvaluatedStudents(selectedSession)
         } else {
           throw error
