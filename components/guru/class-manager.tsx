@@ -32,9 +32,18 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
     const [sessions, setSessions] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
+    // Stats State
+    const [attendanceRate, setAttendanceRate] = useState(0)
+
     // New Session State
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [newSessionData, setNewSessionData] = useState({ date: "", notes: "" })
+
+    // Detail Session State
+    const [isDetailOpen, setIsDetailOpen] = useState(false)
+    const [selectedSession, setSelectedSession] = useState<any>(null)
+    const [sessionEvaluations, setSessionEvaluations] = useState<any[]>([])
+    const [detailLoading, setDetailLoading] = useState(false)
 
     const supabase = createClient()
     const router = useRouter()
@@ -44,6 +53,7 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
     }, [classId])
 
     async function fetchData() {
+        setLoading(true)
         // 1. Fetch Class Details
         const { data: cls } = await supabase
             .from("classes")
@@ -59,8 +69,10 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
             .select("*, user:users(id, full_name, phone, address)")
             .eq("class_id", classId)
 
+        let currentStudents: any[] = []
         if (enrollmentData) {
-            setStudents(enrollmentData.map((e: any) => e.user).filter(Boolean))
+            currentStudents = enrollmentData.map((e: any) => e.user).filter(Boolean)
+            setStudents(currentStudents)
         }
 
         // 3. Fetch Sessions
@@ -70,8 +82,32 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
             .eq("class_id", classId)
             .order("session_date", { ascending: false })
 
+        let currentSessions: any[] = []
         if (sessionData) {
+            // Force local date handling if needed, but display handles it.
+            currentSessions = sessionData
             setSessions(sessionData)
+        }
+
+        // 4. Calculate Attendance Rate
+        // Logic: (Total Evaluations / (Total Sessions * Total Students)) * 100
+        if (currentSessions.length > 0 && currentStudents.length > 0) {
+            const sessionIds = currentSessions.map(s => s.id)
+
+            // Count total evaluations for these sessions
+            // Note: .in() with a large array might hit limits, but for a class context it's fine.
+            const { count } = await supabase
+                .from("evaluations")
+                .select("*", { count: 'exact', head: true })
+                .in("session_id", sessionIds)
+
+            const totalPossible = currentSessions.length * currentStudents.length
+            const actualEvaluations = count || 0
+
+            const rate = totalPossible > 0 ? (actualEvaluations / totalPossible) * 100 : 0
+            setAttendanceRate(Math.round(rate))
+        } else {
+            setAttendanceRate(0)
         }
 
         setLoading(false)
@@ -97,8 +133,31 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
             toast.success("Sesi berhasil dibuat!")
             setIsCreateOpen(false)
             setNewSessionData({ date: "", notes: "" })
-            fetchData() // Refresh list
+            fetchData() // Refresh list & stats
         }
+    }
+
+    async function handleViewDetail(session: any) {
+        setSelectedSession(session)
+        setIsDetailOpen(true)
+        setDetailLoading(true)
+        setSessionEvaluations([])
+
+        // Fetch evaluations for this session
+        const { data: evals, error } = await supabase
+            .from("evaluations")
+            .select("*, user:users!user_id(full_name)")
+            .eq("session_id", session.id)
+
+        if (error) {
+            console.error("Error fetching details:", error)
+            toast.error("Gagal memuat detail evaluasi")
+        }
+
+        if (evals) {
+            setSessionEvaluations(evals)
+        }
+        setDetailLoading(false)
     }
 
     if (loading) return <div className="p-8 text-center">Memuat data kelas...</div>
@@ -186,6 +245,69 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                                 </Dialog>
                             </div>
 
+                            {/* DETAIL SESSION DIALOG */}
+                            <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+                                <DialogContent className="max-w-2xl">
+                                    <DialogHeader>
+                                        <DialogTitle>Detail Sesi</DialogTitle>
+                                        <DialogDescription>
+                                            Informasi sesi dan daftar santri yang dinilai.
+                                        </DialogDescription>
+                                    </DialogHeader>
+
+                                    {selectedSession && (
+                                        <div className="space-y-6">
+                                            <div className="grid grid-cols-2 gap-4 bg-muted/20 p-4 rounded-lg">
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">Tanggal</p>
+                                                    <p className="font-medium">
+                                                        {new Date(selectedSession.session_date).toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">Catatan</p>
+                                                    <p className="font-medium">{selectedSession.notes || "-"}</p>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-semibold mb-3">Daftar Evaluasi ({sessionEvaluations.length})</h4>
+                                                {detailLoading ? (
+                                                    <p className="text-center text-muted-foreground py-4">Memuat data...</p>
+                                                ) : sessionEvaluations.length === 0 ? (
+                                                    <p className="text-center text-muted-foreground py-4 border rounded-md">
+                                                        Belum ada santri yang dinilai pada sesi ini.
+                                                    </p>
+                                                ) : (
+                                                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                                                        {sessionEvaluations.map((ev) => (
+                                                            <div key={ev.id} className="flex justify-between items-start border p-3 rounded-lg">
+                                                                <div>
+                                                                    <p className="font-medium text-lg">{ev.user?.full_name}</p>
+                                                                    <div className="flex gap-2 text-xs mt-1">
+                                                                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium border border-blue-200">
+                                                                            Hafalan: {ev.hafalan_level?.replace(/_/g, " ")}
+                                                                        </span>
+                                                                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded font-medium border border-green-200">
+                                                                            Tajwid: {ev.tajweed_level?.replace(/_/g, " ")}
+                                                                        </span>
+                                                                    </div>
+                                                                    {ev.additional_notes && (
+                                                                        <p className="text-sm text-muted-foreground mt-2 bg-muted p-2 rounded italic">
+                                                                            "{ev.additional_notes}"
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </DialogContent>
+                            </Dialog>
+
                             <div className="space-y-3">
                                 {sessions.length === 0 ? (
                                     <p className="text-center py-8 text-muted-foreground">Belum ada sesi yang dibuat.</p>
@@ -206,8 +328,7 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                {/* Detail button now hints functionality or could navigate to an evaluation page later */}
-                                                <Button variant="outline" size="sm" onClick={() => toast.info("Fitur detail sesi akan datang!")}>
+                                                <Button variant="outline" size="sm" onClick={() => handleViewDetail(session)}>
                                                     Detail
                                                 </Button>
                                             </CardContent>
@@ -267,7 +388,9 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                             </div>
                             <div className="flex justify-between border-b pb-2">
                                 <span className="text-muted-foreground text-sm">Kehadiran Rata-rata</span>
-                                <span className="font-semibold">—</span> {/* Todo: Calculate */}
+                                <span className="font-semibold">
+                                    {attendanceRate}%
+                                </span>
                             </div>
                         </CardContent>
                     </Card>

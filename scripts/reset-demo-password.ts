@@ -9,6 +9,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 async function resetGuruPassword() {
+    console.log("🔄 Resetting Guru Password...")
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
     // 1. Find Guru ID
@@ -19,18 +20,18 @@ async function resetGuruPassword() {
         return
     }
 
-    console.log(`Found Guru ID: ${users.id}`)
+    console.log(`   Found Guru ID: ${users.id}`)
 
     // 2. Update Password via Auth Admin
     const { data: user, error } = await supabase.auth.admin.updateUserById(
         users.id,
-        { password: "password123" }
+        { password: "Guru123456!" }
     )
 
     if (error) {
         console.error("❌ Failed to reset password:", error.message)
     } else {
-        console.log("✅ Password reset to 'password123' for guru@tahfidz.test")
+        console.log("✅ Password reset to 'Guru123456!' for guru@tahfidz.test")
     }
 }
 

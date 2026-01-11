@@ -9,6 +9,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 async function resetMuridPassword() {
+    console.log("🔄 Resetting Murid Password...")
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
     // 1. Find Murid ID
@@ -19,18 +20,18 @@ async function resetMuridPassword() {
         return
     }
 
-    console.log(`Found Murid ID: ${users.id}`)
+    console.log(`   Found Murid ID: ${users.id}`)
 
     // 2. Update Password via Auth Admin
     const { data: user, error } = await supabase.auth.admin.updateUserById(
         users.id,
-        { password: "password123" }
+        { password: "Murid123456!" }
     )
 
     if (error) {
         console.error("❌ Failed to reset password:", error.message)
     } else {
-        console.log("✅ Password reset to 'password123' for murid1@tahfidz.test")
+        console.log("✅ Password reset to 'Murid123456!' for murid1@tahfidz.test")
     }
 }
 
