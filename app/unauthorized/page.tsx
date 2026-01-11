@@ -5,10 +5,10 @@ export default function UnauthorizedPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-red-600 mb-4">Unauthorized</h1>
-        <p className="text-gray-600 mb-6">You don't have permission to access this page.</p>
+        <h1 className="text-3xl font-bold text-red-600 mb-4">Tidak Diizinkan</h1>
+        <p className="text-gray-600 mb-6">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
         <Link href="/auth/login">
-          <Button>Back to Login</Button>
+          <Button>Kembali ke Masuk</Button>
         </Link>
       </div>
     </div>

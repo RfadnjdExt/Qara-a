@@ -14,7 +14,7 @@ async function LogoutButton() {
     <form action={handleLogout} className="w-full">
       <Button variant="ghost" className="w-full justify-start" type="submit">
         <LogOut className="w-4 h-4 mr-2" />
-        Logout
+        Keluar
       </Button>
     </form>
   )
@@ -27,7 +27,7 @@ export async function GuruSidebar() {
     <div className="w-64 border-r border-border bg-sidebar flex flex-col h-screen">
       <div className="p-6 border-b border-sidebar-border">
         <h1 className="text-xl font-bold text-sidebar-foreground">Mutabaah</h1>
-        <p className="text-xs text-sidebar-accent-foreground/70">Guru Panel</p>
+        <p className="text-xs text-sidebar-accent-foreground/70">Panel Guru</p>
       </div>
 
       <div className="p-4 border-b border-sidebar-border">
@@ -46,21 +46,21 @@ export async function GuruSidebar() {
         <Link href="/guru/classes">
           <Button variant="ghost" className="w-full justify-start">
             <BookOpen className="w-4 h-4 mr-2" />
-            My Classes
+            Kelas Saya
           </Button>
         </Link>
 
         <Link href="/guru/sessions">
           <Button variant="ghost" className="w-full justify-start">
             <CheckSquare className="w-4 h-4 mr-2" />
-            Sessions
+            Sesi
           </Button>
         </Link>
 
         <Link href="/guru/students">
           <Button variant="ghost" className="w-full justify-start">
             <Users className="w-4 h-4 mr-2" />
-            Students
+            Santri
           </Button>
         </Link>
       </nav>

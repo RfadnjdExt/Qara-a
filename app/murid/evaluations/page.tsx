@@ -7,8 +7,8 @@ export default async function MuridEvaluationsPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">My Evaluations</h1>
-        <p className="text-muted-foreground">View all your Mutabaah evaluation records</p>
+        <h1 className="text-3xl font-bold">Evaluasi Saya</h1>
+        <p className="text-muted-foreground">Lihat semua catatan evaluasi Mutabaah Anda</p>
       </div>
 
       <EvaluationView userId={userData.id} />

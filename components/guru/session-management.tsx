@@ -61,25 +61,25 @@ export function SessionManagement({ guruId, institutionId }: { guruId: string; i
   }
 
   async function handleDeleteSession(sessionId: string) {
-    if (confirm("Delete this session?")) {
+    if (confirm("Hapus sesi ini?")) {
       await supabase.from("sessions").delete().eq("id", sessionId)
       fetchData()
     }
   }
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>
+  if (isLoading) return <div className="text-center py-10">Memuat...</div>
 
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle>Teaching Sessions</CardTitle>
-            <CardDescription>Create and manage your teaching sessions</CardDescription>
+            <CardTitle>Sesi Pembelajaran</CardTitle>
+            <CardDescription>Buat dan kelola sesi mengajar Anda</CardDescription>
           </div>
           <Button onClick={() => setShowForm(!showForm)} size="sm">
             <Plus className="w-4 h-4 mr-2" />
-            New Session
+            Sesi Baru
           </Button>
         </div>
       </CardHeader>
@@ -92,7 +92,7 @@ export function SessionManagement({ guruId, institutionId }: { guruId: string; i
               className="w-full px-3 py-2 border border-input rounded-md bg-background"
               required
             >
-              <option value="">Select Class</option>
+              <option value="">Pilih Kelas</option>
               {classes.map((cls) => (
                 <option key={cls.id} value={cls.id}>
                   {cls.name}
@@ -112,26 +112,26 @@ export function SessionManagement({ guruId, institutionId }: { guruId: string; i
                 type="time"
                 value={formData.start_time}
                 onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                placeholder="Start time"
+                placeholder="Waktu Mulai"
               />
               <Input
                 type="time"
                 value={formData.end_time}
                 onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                placeholder="End time"
+                placeholder="Waktu Selesai"
               />
             </div>
 
             <Input
-              placeholder="Notes (optional)"
+              placeholder="Catatan (opsional)"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
 
             <div className="flex gap-2">
-              <Button type="submit">Create Session</Button>
+              <Button type="submit">Buat Sesi</Button>
               <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                Cancel
+                Batal
               </Button>
             </div>
           </form>
@@ -139,7 +139,7 @@ export function SessionManagement({ guruId, institutionId }: { guruId: string; i
 
         <div className="space-y-2">
           {sessions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No sessions created yet</p>
+            <p className="text-sm text-muted-foreground">Belum ada sesi dibuat</p>
           ) : (
             sessions.map((session) => (
               <Card key={session.id} className="p-4">

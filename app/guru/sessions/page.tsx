@@ -7,8 +7,8 @@ export default async function GuruSessionsPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Sessions</h1>
-        <p className="text-muted-foreground">Create and manage teaching sessions</p>
+        <h1 className="text-3xl font-bold">Sesi</h1>
+        <p className="text-muted-foreground">Buat dan kelola sesi pembelajaran</p>
       </div>
 
       <SessionManagement guruId={userData.id} institutionId={userData.institution_id} />

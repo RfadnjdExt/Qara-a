@@ -37,31 +37,31 @@ export function AdminDashboardContent({ institutionId }: { institutionId: string
   }, [institutionId, supabase])
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading...</div>
+    return <div className="text-center py-10">Memuat...</div>
   }
 
   return (
     <Tabs defaultValue="users" className="space-y-4">
       <TabsList>
-        <TabsTrigger value="users">Recent Users</TabsTrigger>
-        <TabsTrigger value="classes">Recent Classes</TabsTrigger>
+        <TabsTrigger value="users">Pengguna Baru</TabsTrigger>
+        <TabsTrigger value="classes">Kelas Baru</TabsTrigger>
       </TabsList>
 
       <TabsContent value="users">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Users</CardTitle>
-            <CardDescription>Latest registered users in your institution</CardDescription>
+            <CardTitle>Pengguna Baru</CardTitle>
+            <CardDescription>Pengguna terbaru yang terdaftar di institusi Anda</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 px-4">Name</th>
+                    <th className="text-left py-2 px-4">Nama</th>
                     <th className="text-left py-2 px-4">Email</th>
-                    <th className="text-left py-2 px-4">Role</th>
-                    <th className="text-left py-2 px-4">Date</th>
+                    <th className="text-left py-2 px-4">Peran</th>
+                    <th className="text-left py-2 px-4">Tanggal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -89,17 +89,17 @@ export function AdminDashboardContent({ institutionId }: { institutionId: string
       <TabsContent value="classes">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Classes</CardTitle>
-            <CardDescription>Latest created classes in your institution</CardDescription>
+            <CardTitle>Kelas Baru</CardTitle>
+            <CardDescription>Kelas terbaru yang dibuat di institusi Anda</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 px-4">Class Name</th>
-                    <th className="text-left py-2 px-4">Teacher</th>
-                    <th className="text-left py-2 px-4">Created</th>
+                    <th className="text-left py-2 px-4">Nama Kelas</th>
+                    <th className="text-left py-2 px-4">Guru</th>
+                    <th className="text-left py-2 px-4">Dibuat</th>
                   </tr>
                 </thead>
                 <tbody>

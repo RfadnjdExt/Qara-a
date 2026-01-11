@@ -139,7 +139,7 @@ export function StudentEvaluation({
   }
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading...</div>
+    return <div className="text-center py-10">Memuat...</div>
   }
 
   return (
@@ -147,7 +147,7 @@ export function StudentEvaluation({
       {classes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">No classes assigned</p>
+            <p className="text-center text-muted-foreground">Tidak ada kelas yang ditugaskan</p>
           </CardContent>
         </Card>
       ) : (
@@ -169,8 +169,8 @@ export function StudentEvaluation({
 
           <Tabs defaultValue="evaluation" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="evaluation">Evaluations</TabsTrigger>
-              <TabsTrigger value="attendance">Attendance</TabsTrigger>
+              <TabsTrigger value="evaluation">Evaluasi</TabsTrigger>
+              <TabsTrigger value="attendance">Kehadiran</TabsTrigger>
             </TabsList>
 
             <TabsContent value="evaluation">
@@ -178,12 +178,12 @@ export function StudentEvaluation({
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle>Mutabaah Evaluations</CardTitle>
-                      <CardDescription>Record daily student evaluations</CardDescription>
+                      <CardTitle>Evaluasi Mutabaah</CardTitle>
+                      <CardDescription>Catat evaluasi harian santri</CardDescription>
                     </div>
                     <Button onClick={() => setShowEvalForm(!showEvalForm)} size="sm">
                       <Plus className="w-4 h-4 mr-2" />
-                      Add Evaluation
+                      Tambah Evaluasi
                     </Button>
                   </div>
                 </CardHeader>
@@ -196,7 +196,7 @@ export function StudentEvaluation({
                         className="w-full px-3 py-2 border border-input rounded-md bg-background"
                         required
                       >
-                        <option value="">Select Session</option>
+                        <option value="">Pilih Sesi</option>
                         {sessions.map((s) => (
                           <option key={s.id} value={s.id}>
                             {new Date(s.session_date).toLocaleDateString()}
@@ -210,7 +210,7 @@ export function StudentEvaluation({
                         className="w-full px-3 py-2 border border-input rounded-md bg-background"
                         required
                       >
-                        <option value="">Select Student</option>
+                        <option value="">Pilih Santri</option>
                         {students.map((s) => (
                           <option key={s.id} value={s.id}>
                             {s.full_name}
@@ -226,7 +226,7 @@ export function StudentEvaluation({
                         className="w-full px-3 py-2 border border-input rounded-md bg-background"
                         required
                       >
-                        <option value="">Select Template</option>
+                        <option value="">Pilih Template</option>
                         {templates.map((t) => (
                           <option key={t.id} value={t.id}>
                             {t.name}
@@ -242,7 +242,7 @@ export function StudentEvaluation({
                           }
                           className="px-3 py-2 border border-input rounded-md bg-background text-sm"
                         >
-                          <option value="">Tajweed</option>
+                          <option value="">Tajwid</option>
                           <option value="belum_hafal">Belum Hafal</option>
                           <option value="hafal_tidak_lancar">Tidak Lancar</option>
                           <option value="hafal_lancar">Lancar</option>
@@ -279,7 +279,7 @@ export function StudentEvaluation({
                       </div>
 
                       <textarea
-                        placeholder="Additional notes..."
+                        placeholder="Catatan tambahan..."
                         value={evalFormData.additional_notes}
                         onChange={(e) =>
                           setEvalFormData({ ...evalFormData, additional_notes: e.target.value })
@@ -289,16 +289,16 @@ export function StudentEvaluation({
                       />
 
                       <div className="flex gap-2">
-                        <Button type="submit">Save Evaluation</Button>
+                        <Button type="submit">Simpan Evaluasi</Button>
                         <Button type="button" variant="outline" onClick={() => setShowEvalForm(false)}>
-                          Cancel
+                          Batal
                         </Button>
                       </div>
                     </form>
                   )}
 
                   <div className="text-center py-10 text-muted-foreground">
-                    Evaluations for this class will appear here
+                    Evaluasi untuk kelas ini akan muncul di sini
                   </div>
                 </CardContent>
               </Card>
@@ -307,12 +307,12 @@ export function StudentEvaluation({
             <TabsContent value="attendance">
               <Card>
                 <CardHeader>
-                  <CardTitle>Attendance</CardTitle>
-                  <CardDescription>Track student attendance</CardDescription>
+                  <CardTitle>Kehadiran</CardTitle>
+                  <CardDescription>Lacak kehadiran santri</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-10 text-muted-foreground">
-                    Attendance tracking coming soon
+                    Pencatatan kehadiran akan segera hadir
                   </div>
                 </CardContent>
               </Card>

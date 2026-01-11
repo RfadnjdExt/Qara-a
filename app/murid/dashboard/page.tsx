@@ -26,29 +26,29 @@ export default async function MuridDashboardPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Welcome, {userData.full_name}</h1>
-        <p className="text-muted-foreground">View your evaluations and learning progress</p>
+        <h1 className="text-3xl font-bold">Selamat Datang, {userData.full_name}</h1>
+        <p className="text-muted-foreground">Lihat evaluasi dan perkembangan belajar Anda</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">My Classes</CardTitle>
+            <CardTitle className="text-sm font-medium">Kelas Saya</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{enrollments?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Enrolled classes</p>
+            <p className="text-xs text-muted-foreground">Kelas diikuti</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Latest Evaluation</CardTitle>
+            <CardTitle className="text-sm font-medium">Evaluasi Terakhir</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{latestEval ? "Recorded" : "—"}</div>
+            <div className="text-2xl font-bold">{latestEval ? "Tercatat" : "—"}</div>
             <p className="text-xs text-muted-foreground">
-              {latestEval ? new Date(latestEval.created_at).toLocaleDateString() : "No evaluations yet"}
+              {latestEval ? new Date(latestEval.created_at).toLocaleDateString() : "Belum ada evaluasi"}
             </p>
           </CardContent>
         </Card>
@@ -58,8 +58,8 @@ export default async function MuridDashboardPage() {
             <CardTitle className="text-sm font-medium">Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">Active</div>
-            <p className="text-xs text-muted-foreground">Learning in progress</p>
+            <div className="text-2xl font-bold text-green-600">Aktif</div>
+            <p className="text-xs text-muted-foreground">Pembelajaran sedang berlangsung</p>
           </CardContent>
         </Card>
       </div>

@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
+import type React from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -63,7 +64,7 @@ export function EvaluationView({ userId }: { userId: string }) {
   }
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading...</div>
+    return <div className="text-center py-10">Memuat...</div>
   }
 
   return (
@@ -71,13 +72,13 @@ export function EvaluationView({ userId }: { userId: string }) {
       {/* Filters and Search */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Filter & Search</CardTitle>
+          <CardTitle className="text-base">Filter & Cari</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search by teacher or notes..."
+              placeholder="Cari berdasarkan guru atau catatan..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -86,13 +87,13 @@ export function EvaluationView({ userId }: { userId: string }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Hafalan Level</label>
+              <label className="text-sm font-medium mb-2 block">Level Hafalan</label>
               <select
                 value={filterLevel}
                 onChange={(e) => setFilterLevel(e.target.value)}
                 className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
               >
-                <option value="all">All Levels</option>
+                <option value="all">Semua Level</option>
                 <option value="belum_hafal">Belum Hafal</option>
                 <option value="hafal_tidak_lancar">Tidak Lancar</option>
                 <option value="hafal_lancar">Lancar</option>
@@ -101,14 +102,14 @@ export function EvaluationView({ userId }: { userId: string }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Sort By</label>
+              <label className="text-sm font-medium mb-2 block">Urutkan</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as "date-desc" | "date-asc")}
                 className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
               >
-                <option value="date-desc">Newest First</option>
-                <option value="date-asc">Oldest First</option>
+                <option value="date-desc">Terbaru</option>
+                <option value="date-asc">Terlama</option>
               </select>
             </div>
           </div>
@@ -120,7 +121,7 @@ export function EvaluationView({ userId }: { userId: string }) {
         {filteredEvaluations.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">No evaluations found</p>
+              <p className="text-center text-muted-foreground">Tidak ada evaluasi ditemukan</p>
             </CardContent>
           </Card>
         ) : (
@@ -138,22 +139,21 @@ export function EvaluationView({ userId }: { userId: string }) {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="p-3 bg-muted rounded">
                     <p className="text-xs text-muted-foreground mb-1">Hafalan</p>
-                    <p className="font-semibold text-sm capitalize">{evaluation.hafalan_level || "—"}</p>
+                    <p className="font-medium capitalize text-sm">{evaluation.hafalan_level?.replace(/_/g, " ")}</p>
                   </div>
                   <div className="p-3 bg-muted rounded">
-                    <p className="text-xs text-muted-foreground mb-1">Tajweed</p>
-                    <p className="font-semibold text-sm capitalize">{evaluation.tajweed_level || "—"}</p>
+                    <p className="text-xs text-muted-foreground mb-1">Tajwid</p>
+                    <p className="font-medium capitalize text-sm">{evaluation.tajweed_level?.replace(/_/g, " ")}</p>
                   </div>
                   <div className="p-3 bg-muted rounded">
                     <p className="text-xs text-muted-foreground mb-1">Tartil</p>
-                    <p className="font-semibold text-sm capitalize">{evaluation.tartil_level || "—"}</p>
+                    <p className="font-medium capitalize text-sm">{evaluation.tartil_level?.replace(/_/g, " ")}</p>
                   </div>
                 </div>
-
                 {evaluation.additional_notes && (
-                  <div className="p-3 bg-muted rounded">
-                    <p className="text-xs text-muted-foreground mb-1">Notes</p>
-                    <p className="text-sm">{evaluation.additional_notes}</p>
+                  <div className="p-3 border rounded text-sm bg-background">
+                    <p className="text-muted-foreground mb-1 text-xs">Catatan:</p>
+                    {evaluation.additional_notes}
                   </div>
                 )}
               </CardContent>

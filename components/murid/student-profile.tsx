@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import type React from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function StudentProfile({ userData }: { userData: any }) {
   const [isEditing, setIsEditing] = useState(false)
@@ -25,15 +26,15 @@ export function StudentProfile({ userData }: { userData: any }) {
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Your profile details</CardDescription>
+              <CardTitle>Informasi Pribadi</CardTitle>
+              <CardDescription>Detail profil Anda</CardDescription>
             </div>
-            {!isEditing && <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>}
+            {!isEditing && <Button onClick={() => setIsEditing(true)}>Edit Profil</Button>}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Full Name</label>
+            <label className="text-sm font-medium mb-2 block">Nama Lengkap</label>
             {isEditing ? (
               <Input
                 value={formData.full_name}
@@ -58,7 +59,7 @@ export function StudentProfile({ userData }: { userData: any }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Phone (Optional)</label>
+            <label className="text-sm font-medium mb-2 block">Telepon (Opsional)</label>
             {isEditing ? (
               <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
             ) : (
@@ -67,7 +68,7 @@ export function StudentProfile({ userData }: { userData: any }) {
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Address (Optional)</label>
+            <label className="text-sm font-medium mb-2 block">Alamat (Opsional)</label>
             {isEditing ? (
               <textarea
                 value={formData.address}
@@ -82,9 +83,9 @@ export function StudentProfile({ userData }: { userData: any }) {
 
           {isEditing && (
             <div className="flex gap-2 pt-4">
-              <Button onClick={handleSave}>Save Changes</Button>
+              <Button onClick={handleSave}>Simpan Perubahan</Button>
               <Button variant="outline" onClick={() => setIsEditing(false)}>
-                Cancel
+                Batal
               </Button>
             </div>
           )}
@@ -93,20 +94,20 @@ export function StudentProfile({ userData }: { userData: any }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-          <CardDescription>System information about your account</CardDescription>
+          <CardTitle>Informasi Akun</CardTitle>
+          <CardDescription>Informasi sistem tentang akun Anda</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between">
-            <p className="text-sm text-muted-foreground">Role</p>
-            <p className="font-semibold capitalize">Student (Murid)</p>
+            <p className="text-sm text-muted-foreground">Peran</p>
+            <p className="font-semibold capitalize">Santri (Murid)</p>
           </div>
           <div className="flex justify-between">
             <p className="text-sm text-muted-foreground">User ID</p>
             <p className="font-mono text-sm">{userData.id.substring(0, 8)}...</p>
           </div>
           <div className="flex justify-between">
-            <p className="text-sm text-muted-foreground">Member Since</p>
+            <p className="text-sm text-muted-foreground">Bergabung Sejak</p>
             <p className="font-semibold">{new Date(userData.created_at).toLocaleDateString()}</p>
           </div>
         </CardContent>

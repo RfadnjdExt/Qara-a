@@ -26,7 +26,7 @@ export function GuruClasses({ guruId }: { guruId: string }) {
   }, [guruId, supabase])
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading...</div>
+    return <div className="text-center py-10">Memuat...</div>
   }
 
   return (
@@ -34,7 +34,7 @@ export function GuruClasses({ guruId }: { guruId: string }) {
       {classes.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">No classes assigned yet</p>
+            <p className="text-center text-muted-foreground">Belum ada kelas yang ditugaskan</p>
           </CardContent>
         </Card>
       ) : (
@@ -47,14 +47,14 @@ export function GuruClasses({ guruId }: { guruId: string }) {
                   <CardDescription>{cls.semester?.name}</CardDescription>
                 </div>
                 <Link href={`/guru/classes/${cls.id}`}>
-                  <Button size="sm">Manage</Button>
+                  <Button size="sm">Kelola</Button>
                 </Link>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">{cls.description || "No description"}</p>
+              <p className="text-sm text-muted-foreground">{cls.description || "Tidak ada deskripsi"}</p>
               <p className="text-sm mt-2">
-                <strong>Students:</strong> {cls.enrollments?.[0]?.count || 0}
+                <strong>Santri:</strong> {cls.enrollments?.[0]?.count || 0}
               </p>
             </CardContent>
           </Card>

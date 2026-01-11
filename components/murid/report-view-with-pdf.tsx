@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -87,21 +87,21 @@ export function ReportViewWithPDF({
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
-      link.download = `evaluation-report-${userName}-${new Date().toISOString().split("T")[0]}.html`
+      link.download = `laporan-evaluasi-${userName}-${new Date().toISOString().split("T")[0]}.html`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
     } catch (error) {
       console.error("Error generating PDF:", error)
-      alert("Failed to generate report. Please try again.")
+      alert("Gagal membuat laporan. Silakan coba lagi.")
     } finally {
       setIsGenerating(false)
     }
   }
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading...</div>
+    return <div className="text-center py-10">Memuat...</div>
   }
 
   return (
@@ -109,7 +109,7 @@ export function ReportViewWithPDF({
       {evaluations.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">No evaluations available for report generation</p>
+            <p className="text-center text-muted-foreground">Tidak ada data evaluasi untuk laporan</p>
           </CardContent>
         </Card>
       ) : (
@@ -119,20 +119,20 @@ export function ReportViewWithPDF({
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle>Official Evaluation Report</CardTitle>
-                  <CardDescription>Generate an official PDF report with institutional branding</CardDescription>
+                  <CardTitle>Laporan Evaluasi Resmi</CardTitle>
+                  <CardDescription>Buat laporan PDF resmi dengan kop institusi</CardDescription>
                 </div>
                 <FileText className="w-8 h-8 text-primary opacity-50" />
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
-                Download a professional evaluation report that can be printed or shared. The report includes your
-                evaluation history, summary statistics, and institutional branding.
+                Unduh laporan evaluasi profesional yang dapat dicetak atau dibagikan. Laporan mencakup riwayat evaluasi,
+                statistik ringkasan, dan branding institusi.
               </p>
               <Button onClick={generatePDFReport} disabled={isGenerating} size="lg" className="w-full sm:w-auto">
                 <Download className="w-4 h-4 mr-2" />
-                {isGenerating ? "Generating..." : "Generate & Download PDF"}
+                {isGenerating ? "Sedang Membuat..." : "Buat & Unduh PDF"}
               </Button>
             </CardContent>
           </Card>
@@ -140,14 +140,14 @@ export function ReportViewWithPDF({
           {/* Summary Statistics */}
           <Card>
             <CardHeader>
-              <CardTitle>Report Summary</CardTitle>
-              <CardDescription>Overview of your evaluation records</CardDescription>
+              <CardTitle>Ringkasan Laporan</CardTitle>
+              <CardDescription>Gambaran umum catatan evaluasi Anda</CardDescription>
             </CardHeader>
             <CardContent>
               {stats && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   <div className="p-4 bg-muted rounded">
-                    <p className="text-xs text-muted-foreground mb-1">Total Evaluations</p>
+                    <p className="text-xs text-muted-foreground mb-1">Total Evaluasi</p>
                     <p className="text-2xl font-bold">{stats.totalEvaluations}</p>
                   </div>
 
@@ -172,50 +172,6 @@ export function ReportViewWithPDF({
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Evaluation Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Evaluation Details</CardTitle>
-              <CardDescription>All recorded evaluations (also included in PDF report)</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {evaluations.map((evaluation, index) => (
-                  <div key={evaluation.id} className="p-4 border border-border rounded">
-                    <div className="flex justify-between items-start mb-3">
-                      <p className="font-semibold">Evaluation {evaluations.length - index}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(evaluation.session?.session_date).toLocaleDateString()}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3 mb-3">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Hafalan</p>
-                        <p className="font-semibold text-sm capitalize">{evaluation.hafalan_level || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Tajweed</p>
-                        <p className="font-semibold text-sm capitalize">{evaluation.tajweed_level || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Tartil</p>
-                        <p className="font-semibold text-sm capitalize">{evaluation.tartil_level || "—"}</p>
-                      </div>
-                    </div>
-
-                    {evaluation.additional_notes && (
-                      <div className="text-sm text-muted-foreground">
-                        <p className="text-xs font-medium mb-1">Notes:</p>
-                        <p>{evaluation.additional_notes}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
             </CardContent>
           </Card>
         </>

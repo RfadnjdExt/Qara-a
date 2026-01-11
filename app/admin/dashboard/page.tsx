@@ -2,6 +2,7 @@ import { getCurrentUserWithRole } from "@/lib/auth-utils"
 import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AdminDashboardContent } from "@/components/admin/dashboard-content"
+import { DashboardCharts } from "@/components/admin/dashboard-charts"
 
 // 1. Perbaikan Metadata & Viewport (Menghilangkan Warning)
 export const metadata = {
@@ -68,7 +69,7 @@ export default async function AdminDashboardPage() {
           {institution?.name || "Dashboard"}
         </h1>
         <p className="text-muted-foreground">
-          {institution?.code || "Institution Code"}
+          {institution?.code || "Kode Institusi"}
         </p>
       </div>
 
@@ -77,7 +78,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Users
+              Total Pengguna
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -85,7 +86,7 @@ export default async function AdminDashboardPage() {
               {usersCount ?? 0}
             </div>
             <p className="text-xs text-muted-foreground">
-              Registered users
+              Pengguna terdaftar
             </p>
           </CardContent>
         </Card>
@@ -93,7 +94,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              Classes
+              Kelas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -101,7 +102,7 @@ export default async function AdminDashboardPage() {
               {classesCount ?? 0}
             </div>
             <p className="text-xs text-muted-foreground">
-              Active classes
+              Kelas aktif
             </p>
           </CardContent>
         </Card>
@@ -109,7 +110,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Semester
+              Semester Aktif
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -117,7 +118,7 @@ export default async function AdminDashboardPage() {
               {activeSemester?.name || "—"}
             </div>
             <p className="text-xs text-muted-foreground">
-              Current period
+              Periode saat ini
             </p>
           </CardContent>
         </Card>
@@ -130,14 +131,17 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              Active
+              Aktif
             </div>
             <p className="text-xs text-muted-foreground">
-              System operational
+              Sistem berjalan normal
             </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* CHARTS */}
+      <DashboardCharts />
 
       {/* DETAIL CONTENT */}
       <AdminDashboardContent institutionId={userData.institution_id} />

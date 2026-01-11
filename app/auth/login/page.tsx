@@ -11,9 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 const DEMO_CREDENTIALS = [
   { email: "admin@tahfidz.test", password: "Admin123456!", role: "Admin" },
-  { email: "guru@tahfidz.test", password: "Guru123456!", role: "Guru (Teacher)" },
-  { email: "murid1@tahfidz.test", password: "Murid123456!", role: "Student 1" },
-  { email: "murid2@tahfidz.test", password: "Murid123456!", role: "Student 2" },
+  { email: "guru@tahfidz.test", password: "Guru123456!", role: "Guru (Ustadz)" },
+  { email: "murid1@tahfidz.test", password: "Murid123456!", role: "Santri 1" },
+  { email: "murid2@tahfidz.test", password: "Murid123456!", role: "Santri 2" },
 ]
 
 export default function LoginPage() {
@@ -47,7 +47,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       console.log("[v0] Login error:", err)
-      setError("An unexpected error occurred")
+      setError("Terjadi kesalahan yang tidak terduga")
     } finally {
       setIsLoading(false)
     }
@@ -63,17 +63,17 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded text-sm mb-4">
-              <strong>First time setup?</strong> Follow the AUTH_SETUP.md guide to create your accounts in Supabase
-              first.
+              <strong>Pengaturan Pertama Kali?</strong> Ikuti panduan AUTH_SETUP.md untuk membuat akun Anda di Supabase
+              terlebih dahulu.
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
-                  <strong>Login Error:</strong> {error}
+                  <strong>Gagal Masuk:</strong> {error}
                   {error.includes("profile") && (
                     <p className="mt-2 text-xs">
-                      This usually means the user account exists in Supabase Auth but not in our database. Check
+                      Ini biasanya berarti akun pengguna ada di Supabase Auth tetapi tidak di database kami. Periksa
                       AUTH_SETUP.md.
                     </p>
                   )}
@@ -86,7 +86,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
+                  placeholder="email@anda.com"
                   disabled={isLoading}
                   required
                 />
@@ -105,7 +105,7 @@ export default function LoginPage() {
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Sedang Masuk..." : "Masuk"}
               </Button>
             </form>
           </CardContent>
@@ -113,9 +113,9 @@ export default function LoginPage() {
 
         <Card className="w-full bg-blue-50 border-blue-200">
           <CardHeader>
-            <CardTitle className="text-base">Demo Accounts (After Setup)</CardTitle>
+            <CardTitle className="text-base">Akun Demo (Setelah Setup)</CardTitle>
             <CardDescription>
-              Click to auto-fill. These are only available after completing AUTH_SETUP.md
+              Klik untuk isi otomatis. Hanya tersedia setelah menyelesaikan AUTH_SETUP.md
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -140,33 +140,31 @@ export default function LoginPage() {
 
         <Card className="w-full bg-gray-50 border-gray-200">
           <CardHeader>
-            <CardTitle className="text-base text-gray-900">Setup Instructions</CardTitle>
+            <CardTitle className="text-base text-gray-900">Petunjuk Setup</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-gray-700 space-y-3">
             <div>
-              <strong className="block text-gray-900 mb-1">1. Create Institution (Optional)</strong>
-              <p className="text-xs">Create an institution in Supabase to organize users and classes.</p>
+              <strong className="block text-gray-900 mb-1">1. Buat Institusi (Opsional)</strong>
+              <p className="text-xs">Buat institusi di Supabase untuk mengatur pengguna dan kelas.</p>
             </div>
             <div>
-              <strong className="block text-gray-900 mb-1">2. Create Supabase Auth Accounts</strong>
+              <strong className="block text-gray-900 mb-1">2. Buat Akun Supabase Auth</strong>
               <p className="text-xs">
-                Go to Supabase Dashboard → Authentication → Users → Add User. Create accounts with the demo emails
-                above.
+                Buka Dashboard Supabase → Authentication → Users → Add User. Buat akun dengan email demo di atas.
               </p>
             </div>
             <div>
-              <strong className="block text-gray-900 mb-1">3. Get User IDs</strong>
-              <p className="text-xs">Copy each user's UUID from Supabase Auth (shown in the user details or URL).</p>
+              <strong className="block text-gray-900 mb-1">3. Dapatkan User ID</strong>
+              <p className="text-xs">Salin UUID setiap pengguna dari Supabase Auth (ditampilkan di detail pengguna atau URL).</p>
             </div>
             <div>
-              <strong className="block text-gray-900 mb-1">4. Insert into Database</strong>
+              <strong className="block text-gray-900 mb-1">4. Masukkan ke Database</strong>
               <p className="text-xs">
-                Run the SQL from AUTH_SETUP.md in your Supabase SQL Editor to create user records.
+                Jalankan SQL dari AUTH_SETUP.md di Supabase SQL Editor Anda untuk membuat data pengguna.
               </p>
             </div>
             <p className="text-xs text-gray-600 pt-2 border-t border-gray-200 mt-2">
-              See <code className="bg-white px-2 py-1 rounded">AUTH_SETUP.md</code> for detailed step-by-step
-              instructions with SQL examples.
+              Lihat <code className="bg-white px-2 py-1 rounded">AUTH_SETUP.md</code> untuk petunjuk langkah demi langkah yang detail dengan contoh SQL.
             </p>
           </CardContent>
         </Card>

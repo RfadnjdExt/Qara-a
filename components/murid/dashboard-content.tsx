@@ -31,20 +31,20 @@ export function MuridDashboardContent({ userId }: { userId: string }) {
   }, [userId, supabase])
 
   if (isLoading) {
-    return <div className="text-center py-10">Loading...</div>
+    return <div className="text-center py-10">Memuat...</div>
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>My Classes</CardTitle>
-          <CardDescription>Classes you are enrolled in</CardDescription>
+          <CardTitle>Kelas Saya</CardTitle>
+          <CardDescription>Kelas yang Anda ikuti</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {enrollments.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No classes yet</p>
+              <p className="text-sm text-muted-foreground">Belum ada kelas</p>
             ) : (
               enrollments.map((enrollment: any) => (
                 <div key={enrollment.id} className="flex justify-between items-start p-3 bg-muted rounded">
@@ -61,13 +61,13 @@ export function MuridDashboardContent({ userId }: { userId: string }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Evaluations</CardTitle>
-          <CardDescription>Your latest Mutabaah records</CardDescription>
+          <CardTitle>Evaluasi Terakhir</CardTitle>
+          <CardDescription>Catatan Mutabaah terbaru Anda</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {recentEvaluations.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No evaluations yet</p>
+              <p className="text-sm text-muted-foreground">Belum ada evaluasi</p>
             ) : (
               recentEvaluations.map((evaluation: any) => (
                 <div key={evaluation.id} className="flex justify-between items-start p-3 bg-muted rounded">
