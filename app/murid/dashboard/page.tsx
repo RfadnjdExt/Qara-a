@@ -5,8 +5,9 @@ import { MuridDashboardContent } from "@/components/murid/dashboard-content"
 import { BadgeList } from "@/components/gamification/badge-list"
 import { getEarnedBadges, getAllBadges } from "@/lib/gamification"
 import { Leaderboard } from "@/components/leaderboard"
+import { StudentProgressChart } from "@/components/analytics/student-progress-chart"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Trophy } from "lucide-react"
 
 async function LatestBadges({ userId }: { userId: string }) {
   const [allBadges, earnedBadges] = await Promise.all([
@@ -76,19 +77,25 @@ export default async function MuridDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-linear-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/10 dark:to-orange-900/10 border-yellow-200 dark:border-yellow-900/20">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-yellow-600" />
+              Poin Saya
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">Aktif</div>
-            <p className="text-xs text-muted-foreground">Pembelajaran sedang berlangsung</p>
+            <div className="text-2xl font-bold text-yellow-700 dark:text-yellow-500">
+              {userData.points || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">Kumpulkan poin dari setoran & kehadiran</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
+          <StudentProgressChart userId={userData.id} />
           <MuridDashboardContent userId={userData.id} />
         </div>
         <div className="space-y-6">
