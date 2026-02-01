@@ -40,20 +40,21 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
+        url: "/icon-192x192.png",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icon-dark-32x32.png",
+        url: "/icon-512x512.png",
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/icon-512x512.png",
+        type: "image/png",
       },
     ],
     apple: "/apple-icon.png",
   },
+  manifest: "/manifest.json",
   generator: 'v0.app'
 }
 
@@ -64,10 +65,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased text-sm md:text-base`}>
         {children}
         <Toaster />
         <Analytics />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                  .then(reg => console.log('Service Worker registered with scope:', reg.scope))
+                  .catch(err => console.error('Service Worker registration failed:', err));
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )
