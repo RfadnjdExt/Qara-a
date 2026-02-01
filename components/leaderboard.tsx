@@ -9,7 +9,7 @@ import { Trophy, Medal, Crown } from "lucide-react"
 type LeaderboardEntry = {
     user_id: string
     full_name: string
-    total_verses: number
+    points: number
     rank: number
 }
 
@@ -39,63 +39,33 @@ export function Leaderboard({ classId }: { classId: string }) {
                 return
             }
 
-            // 2. Fetch aggregate data (Week filter)
-            // Getting start/end of week
-            const now = new Date()
-            const firstDay = new Date(now.setDate(now.getDate() - now.getDay() + 1)) // Monday
-            const lastDay = new Date(now.setDate(now.getDate() - now.getDay() + 7)) // Sunday
-
-            firstDay.setHours(0, 0, 0, 0)
-            lastDay.setHours(23, 59, 59, 999)
-
-            // Fetch evaluations for this class within this week
-            // Note: We need to filter by students in this class.
-            // Easiest is to fetch enrollments for this class, then fetch their evals.
-
-            const { data: enrollments } = await supabase
+            // 2. Fetch users and their points for this class
+            const { data: enrollments, error } = await supabase
                 .from("class_enrollments")
-                .select("user_id, user:users(full_name)")
+                .select("user_id, user:users(full_name, points)")
                 .eq("class_id", classId)
 
-            if (!enrollments || enrollments.length === 0) {
+            if (error || !enrollments || enrollments.length === 0) {
                 setLeaderboard([])
                 setLoading(false)
                 return
             }
 
-            const studentIds = enrollments.map(e => e.user_id)
+            // Map and sort by points
+            const entries: LeaderboardEntry[] = enrollments.map((e: any, i) => ({
+                user_id: e.user_id,
+                full_name: e.user?.full_name || "Unknown",
+                points: e.user?.points || 0,
+                rank: 0
+            }))
+                .filter(e => e.points > 0)
+                .sort((a, b) => b.points - a.points)
+                .slice(0, 5)
 
-            const { data: evals } = await supabase
-                .from("evaluations")
-                .select("user_id, verses_count")
-                .in("user_id", studentIds)
-                .gte("created_at", firstDay.toISOString())
-                .lte("created_at", lastDay.toISOString())
+            // Assign ranks
+            entries.forEach((e, i) => e.rank = i + 1)
 
-            if (evals) {
-                // Aggregate
-                const totals: Record<string, number> = {}
-                evals.forEach(e => {
-                    totals[e.user_id] = (totals[e.user_id] || 0) + (e.verses_count || 0)
-                })
-
-                // Map back to names
-                const entries = enrollments.map(e => ({
-                    user_id: e.user_id,
-                    full_name: (e.user as any)?.full_name || "Unknown",
-                    total_verses: totals[e.user_id] || 0,
-                    rank: 0
-                }))
-                    .filter(e => e.total_verses > 0) // Only show active students? Or show all 0s? Let's show active.
-                    .sort((a, b) => b.total_verses - a.total_verses)
-                    .slice(0, 5) // Top 5
-
-                // Assign ranks (handle ties simplistically for now)
-                entries.forEach((e, i) => e.rank = i + 1)
-
-                setLeaderboard(entries)
-            }
-
+            setLeaderboard(entries)
             setLoading(false)
 
         } catch (err) {
@@ -109,7 +79,7 @@ export function Leaderboard({ classId }: { classId: string }) {
     if (loading) return <div className="text-center py-4 text-sm text-muted-foreground">Memuat Papan Peringkat...</div>
 
     return (
-        <Card className="h-full border-2 border-yellow-100 dark:border-yellow-900/20 bg-gradient-to-b from-white to-yellow-50/20 dark:from-background dark:to-yellow-900/5">
+        <Card className="h-full border-2 border-yellow-100 dark:border-yellow-900/20 bg-linear-to-b from-white to-yellow-50/20 dark:from-background dark:to-yellow-900/5">
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <div>
@@ -144,7 +114,7 @@ export function Leaderboard({ classId }: { classId: string }) {
 
                                 <div className="flex-1">
                                     <p className="font-medium text-sm truncate">{entry.full_name}</p>
-                                    <p className="text-xs text-muted-foreground">{entry.total_verses} Ayat</p>
+                                    <p className="text-xs text-muted-foreground">{entry.points} Poin</p>
                                 </div>
 
                                 {index < 3 && (
