@@ -5,11 +5,15 @@ import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Plus, Calendar, Users, BookOpen, Settings } from "lucide-react"
+import { ArrowLeft, Plus, Calendar, Users, BookOpen, Settings, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { AttendanceSheet } from "./attendance-sheet"
+import { EvaluationSheet } from "./evaluation-sheet"
+import { ProgressTracker } from "./progress-tracker"
 import {
     Dialog,
+
     DialogContent,
     DialogDescription,
     DialogHeader,
@@ -44,6 +48,14 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
     const [selectedSession, setSelectedSession] = useState<any>(null)
     const [sessionEvaluations, setSessionEvaluations] = useState<any[]>([])
     const [detailLoading, setDetailLoading] = useState(false)
+
+    // Attendance State
+    const [isAttendanceOpen, setIsAttendanceOpen] = useState(false)
+    const [attendanceSession, setAttendanceSession] = useState<any>(null)
+
+    // Evaluation State
+    const [isEvaluationOpen, setIsEvaluationOpen] = useState(false)
+    const [evaluationSession, setEvaluationSession] = useState<any>(null)
 
     const supabase = createClient()
     const router = useRouter()
@@ -90,21 +102,20 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
         }
 
         // 4. Calculate Attendance Rate
-        // Logic: (Total Evaluations / (Total Sessions * Total Students)) * 100
+        // Logic: (Total 'hadir' records / (Total Sessions * Total Students)) * 100
         if (currentSessions.length > 0 && currentStudents.length > 0) {
             const sessionIds = currentSessions.map(s => s.id)
 
-            // Count total evaluations for these sessions
-            // Note: .in() with a large array might hit limits, but for a class context it's fine.
-            const { count } = await supabase
-                .from("evaluations")
-                .select("*", { count: 'exact', head: true })
+            const { data: attendanceData } = await supabase
+                .from("attendance_records")
+                .select("status")
                 .in("session_id", sessionIds)
+                .eq("status", "hadir")
 
             const totalPossible = currentSessions.length * currentStudents.length
-            const actualEvaluations = count || 0
+            const actualHadir = attendanceData?.length || 0
 
-            const rate = totalPossible > 0 ? (actualEvaluations / totalPossible) * 100 : 0
+            const rate = totalPossible > 0 ? (actualHadir / totalPossible) * 100 : 0
             setAttendanceRate(Math.round(rate))
         } else {
             setAttendanceRate(0)
@@ -146,7 +157,7 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
         // Fetch evaluations for this session
         const { data: evals, error } = await supabase
             .from("evaluations")
-            .select("*, user:users!user_id(full_name)")
+            .select("*, user:users!user_id(full_name), subject:subjects(name)")
             .eq("session_id", session.id)
 
         if (error) {
@@ -158,6 +169,26 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
             setSessionEvaluations(evals)
         }
         setDetailLoading(false)
+    }
+
+    async function handleOpenAttendance(session: any) {
+        setAttendanceSession(session)
+        setIsAttendanceOpen(true)
+    }
+
+    function handleAttendanceClose() {
+        setIsAttendanceOpen(false)
+        fetchData() // Refresh stats
+    }
+
+    async function handleOpenEvaluation(session: any) {
+        setEvaluationSession(session)
+        setIsEvaluationOpen(true)
+    }
+
+    function handleEvaluationClose() {
+        setIsEvaluationOpen(false)
+        fetchData() // Refresh list (detail counters if added later)
     }
 
     if (loading) return <div className="p-8 text-center">Memuat data kelas...</div>
@@ -198,6 +229,10 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                             <TabsTrigger value="students" className="flex items-center gap-2">
                                 <Users className="h-4 w-4" />
                                 Daftar Santri
+                            </TabsTrigger>
+                            <TabsTrigger value="progress" className="flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4" />
+                                Progres Hafalan
                             </TabsTrigger>
                         </TabsList>
 
@@ -273,9 +308,19 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm text-muted-foreground">Catatan</p>
+                                                    <p className="text-sm text-muted-foreground">Catat</p>
                                                     <p className="font-medium">{selectedSession.notes || "-"}</p>
                                                 </div>
+                                            </div>
+
+                                            <div className="flex justify-between items-center bg-blue-50/50 p-4 rounded-lg border border-blue-100">
+                                                <div>
+                                                    <h4 className="font-semibold text-blue-900">Input / Edit Nilai</h4>
+                                                    <p className="text-sm text-blue-700">Perbarui nilai hafalan dan tajwid untuk sesi ini.</p>
+                                                </div>
+                                                <Button size="sm" onClick={() => { setIsDetailOpen(false); handleOpenEvaluation(selectedSession); }}>
+                                                    Mulai Menilai
+                                                </Button>
                                             </div>
 
                                             <div>
@@ -292,7 +337,17 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                                                             <div key={ev.id} className="flex justify-between items-start border p-3 rounded-lg">
                                                                 <div>
                                                                     <p className="font-medium text-lg">{ev.user?.full_name}</p>
-                                                                    <div className="flex gap-2 text-xs mt-1">
+                                                                    <div className="flex flex-wrap gap-2 text-xs mt-1">
+                                                                        {ev.subject?.name && (
+                                                                            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded font-medium border border-purple-200">
+                                                                                Materi: {ev.subject.name}
+                                                                            </span>
+                                                                        )}
+                                                                        {ev.surah_name && (
+                                                                            <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded font-medium border border-amber-200">
+                                                                                Surah: {ev.surah_name}
+                                                                            </span>
+                                                                        )}
                                                                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium border border-blue-200">
                                                                             Hafalan: {ev.hafalan_level?.replace(/_/g, " ")}
                                                                         </span>
@@ -336,9 +391,17 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <Button variant="outline" size="sm" onClick={() => handleViewDetail(session)}>
-                                                    Detail
-                                                </Button>
+                                                <div className="flex gap-2">
+                                                    <Button variant="outline" size="sm" onClick={() => handleOpenAttendance(session)} className="border-blue-200 text-blue-700 hover:bg-blue-50">
+                                                        Absensi
+                                                    </Button>
+                                                    <Button variant="outline" size="sm" onClick={() => handleOpenEvaluation(session)} className="border-green-200 text-green-700 hover:bg-green-50">
+                                                        Nilai
+                                                    </Button>
+                                                    <Button variant="outline" size="sm" onClick={() => handleViewDetail(session)}>
+                                                        Detail
+                                                    </Button>
+                                                </div>
                                             </CardContent>
                                         </Card>
                                     ))
@@ -380,6 +443,10 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                                 </CardContent>
                             </Card>
                         </TabsContent>
+
+                        <TabsContent value="progress" className="mt-6">
+                            <ProgressTracker classId={classId} guruId={guruId} />
+                        </TabsContent>
                     </Tabs>
                 </div>
 
@@ -404,6 +471,29 @@ export function ClassManager({ classId, guruId }: ClassManagerProps) {
                     </Card>
                 </div>
             </div>
+
+            {/* Attendance Sheet */}
+            {attendanceSession && (
+                <AttendanceSheet
+                    isOpen={isAttendanceOpen}
+                    onClose={handleAttendanceClose}
+                    sessionId={attendanceSession.id}
+                    classId={classId}
+                    sessionDate={attendanceSession.session_date}
+                />
+            )}
+
+            {/* Evaluation Sheet */}
+            {evaluationSession && (
+                <EvaluationSheet
+                    isOpen={isEvaluationOpen}
+                    onClose={handleEvaluationClose}
+                    sessionId={evaluationSession.id}
+                    classId={classId}
+                    guruId={guruId}
+                    sessionDate={evaluationSession.session_date}
+                />
+            )}
         </div>
     )
 }

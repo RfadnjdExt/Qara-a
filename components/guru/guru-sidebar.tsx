@@ -1,7 +1,7 @@
 import { getCurrentUserWithRole } from "@/lib/auth-utils"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { LogOut, LayoutDashboard, BookOpen, Users, CheckSquare } from "lucide-react"
+import { LogOut, LayoutDashboard, BookOpen, Users, CheckSquare, TrendingUp } from "lucide-react"
 
 async function LogoutButton() {
   async function handleLogout() {
@@ -65,6 +65,13 @@ export async function GuruSidebar() {
           <Button variant="ghost" className="w-full justify-start">
             <Users className="w-4 h-4 mr-2" />
             Santri
+          </Button>
+        </Link>
+
+        <Link href="/guru/progress">
+          <Button variant="ghost" className="w-full justify-start">
+            <TrendingUp className="w-4 h-4 mr-2" />
+            Progres Hafalan
           </Button>
         </Link>
       </nav>
