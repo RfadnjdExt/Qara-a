@@ -49,6 +49,7 @@ After creating the auth accounts, you need to create their profiles in your data
 2. Click the "Demo Credentials for Testing" section
 3. Click any demo account to auto-fill the email and password
 4. Click **Login**
+5. (Optional) Run locally with: `bun run dev`
 
 You should be redirected to the appropriate dashboard based on your role.
 

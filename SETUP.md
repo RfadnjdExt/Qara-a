@@ -34,10 +34,10 @@ You have two options:
 
 ### Option B: Automated Setup (via Script)
 
-Run this Node.js script to create accounts programmatically:
+Run this script to create accounts programmatically:
 
 ```bash
-npm run setup:accounts
+bun run setup:accounts
 ```
 
 This will create all test accounts automatically using your Supabase credentials.
@@ -63,8 +63,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ## 5. Run the Application
 
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 Visit `http://localhost:3000` and use the demo credentials to login.
