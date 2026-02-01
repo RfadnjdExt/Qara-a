@@ -28,6 +28,7 @@ export default async function HomePage() {
         admin: "/admin/dashboard",
         guru: "/guru/dashboard",
         murid: "/murid/dashboard",
+        orang_tua: "/orang_tua/dashboard",
       }
       dashboardUrl = redirectMap[userData.role] || "/auth/login";
     }
@@ -36,7 +37,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Navbar */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <nav className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6 lg:px-8">
           <div className="flex items-center gap-2 font-bold text-2xl tracking-tight text-primary">
             <BookOpen className="h-6 w-6" />
@@ -68,7 +69,7 @@ export default async function HomePage() {
             <span className="flex h-2 w-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
             v2.0 kini tersedia
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-balance bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-indigo-600 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both delay-100">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-balance bg-clip-text text-transparent bg-linear-to-r from-primary via-purple-500 to-indigo-600 animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-both delay-100">
             Kelola Institusi <br /> Pendidikan Islam Anda
           </h1>
           <p className="text-xl text-muted-foreground/80 max-w-2xl mx-auto mb-10 text-balance animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both delay-200">
@@ -121,7 +122,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="md:col-span-2 bg-gradient-to-br from-background to-secondary/20 border-primary/10">
+            <Card className="md:col-span-2 bg-linear-to-br from-background to-secondary/20 border-primary/10">
               <CardHeader>
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <BarChart3 className="w-6 h-6 text-primary" />
